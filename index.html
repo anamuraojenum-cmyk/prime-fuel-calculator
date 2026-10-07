@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Prime Fuel Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --text: #111111;
+            --muted: #707070;
+            --border: #e5e5e5;
+            --input: #ffffff;
+            --button: #111111;
+            --button-text: #ffffff;
+            --danger: #c62828;
+            --success: #176b36;
+        }
+
+        body.dark {
+            --bg: #0d0d0d;
+            --card: #181818;
+            --text: #ffffff;
+            --muted: #a5a5a5;
+            --border: #303030;
+            --input: #222222;
+            --button: #ffffff;
+            --button-text: #111111;
+            --success: #70d694;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 25px 16px 40px;
+            transition: 0.25s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 820px;
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: clamp(30px, 7vw, 44px);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--muted);
+        }
+
+        .header-actions {
+            margin-top: 18px;
+        }
+
+        .icon-button {
+            width: auto;
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* CARDS */
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .card-description {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        /* FORM */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 50px;
+            padding: 0 14px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: var(--input);
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--text);
+        }
+
+        .field-hint {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        /* BUTTONS */
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .primary-button,
+        .secondary-button {
+            height: 50px;
+            border-radius: 11px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .primary-button {
+            flex: 1;
+            border: none;
+            background: var(--button);
+            color: var(--button-text);
+        }
+
+        .secondary-button {
+            width: 100px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+        }
+
+        /* ERROR */
+
+        .error {
+            display: none;
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: rgba(198, 40, 40, 0.08);
+            color: var(--danger);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* RESULTS */
+
+        .main-result {
+            text-align: center;
+            padding: 25px 15px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            margin-bottom: 18px;
+        }
+
+        .result-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .main-result-value {
+            font-size: clamp(34px, 9vw, 52px);
+            font-weight: 800;
+        }
+
+        .vehicle-name {
+            color: var(--muted);
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .result-box {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 17px;
+        }
+
+        .result-box span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .result-box strong {
+            font-size: 18px;
+        }
+
+        /* COMPARISON */
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .car-panel {
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 18px;
+        }
+
+        .car-panel h3 {
+            margin-bottom: 15px;
+        }
+
+        .comparison-result {
+            margin-top: 18px;
+            padding: 18px;
+            border-radius: 14px;
+            background: var(--bg);
+            text-align: center;
+        }
+
+        .comparison-result p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .comparison-result strong {
+            font-size: 25px;
+        }
+
+        .winner {
+            margin-top: 15px;
+            text-align: center;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .comparison-error {
+            display: none;
+            margin-top: 15px;
+            color: var(--danger);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* NOTICE */
+
+        .notice {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 18px;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 20px 13px 35px;
+            }
+
+            .card {
+                padding: 20px 17px;
+                border-radius: 17px;
+            }
+
+            .form-grid,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .secondary-button {
+                width: 100%;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 380px) {
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="container">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="brand">PRIME</div>
+
+        <h1>Fuel Calculator</h1>
+
+        <p>Know what your drive costs.</p>
+
+        <div class="header-actions">
+
+            <button
+                class="icon-button"
+                id="themeButton"
+                onclick="toggleTheme()"
+                type="button">
+                🌙 Dark Mode
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- MAIN CALCULATOR -->
+
+    <section class="card">
+
+        <h2 class="card-title">Your Drive</h2>
+
+        <p class="card-description">
+            Enter your vehicle and driving details.
+        </p>
+
+        <div class="form-grid">
+
+            <div class="input-group full-width">
+
+                <label for="carName">Vehicle</label>
+
+                <input
+                    type="text"
+                    id="carName"
+                    placeholder="e.g. Toyota Camry">
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="fuelPrice">Fuel Price</label>
+
+                <input
+                    type="number"
+                    id="fuelPrice"
+                    placeholder="1500"
+                    min="0.01"
+                    step="0.01">
+
+                <div class="field-hint">
+                    Nigerian Naira per litre
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="distance">Distance</label>
+
+                <input
+                    type="number"
+                    id="distance"
+                    placeholder="12"
+                    min="0.01"
+                    step="0.01">
+
+                <div class="field-hint">
+                    Kilometres
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="consumption">
+                    Fuel Consumption
+                </label>
+
+                <input
+                    type="number"
+                    id="consumption"
+                    placeholder="8"
+                    min="0.01"
+                    step="0.1">
+
+                <div class="field-hint">
+                    Litres per 100 km
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="tripType">Trip Type</label>
+
+                <select id="tripType">
+
+                    <option value="1">One Way</option>
+
+                    <option value="2">Round Trip</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="tripsPerDay">Trips Per Day</label>
+
+                <input
+                    type="number"
+                    id="tripsPerDay"
+                    value="1"
+                    min="1"
+                    step="1">
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="daysPerWeek">
+                    Driving Days / Week
+                </label>
+
+                <input
+                    type="number"
+                    id="daysPerWeek"
+                    value="5"
+                    min="1"
+                    max="7"
+                    step="1">
+
+            </div>
+
+        </div>
+
+
+        <div class="error" id="error">
+            Please enter valid values in all required fields.
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                class="primary-button"
+                onclick="calculateFuel()"
+                type="button">
+                Calculate Fuel Cost
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="resetCalculator()"
+                type="button">
+                Reset
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- MAIN RESULTS -->
+
+    <section class="card">
+
+        <h2 class="card-title">Your Estimate</h2>
+
+        <p class="card-description">
+            Based on the information you provided.
+        </p>
+
+
+        <div class="main-result">
+
+            <div class="result-label">
+                ESTIMATED MONTHLY FUEL COST
+            </div>
+
+            <div
+                class="main-result-value"
+                id="monthlyResult">
+                ₦0
+            </div>
+
+            <div
+                class="vehicle-name"
+                id="carResult">
+                Your vehicle
+            </div>
+
+        </div>
+
+
+        <div class="results-grid">
+
+            <div class="result-box">
+
+                <span>Fuel Per Trip</span>
+
+                <strong id="fuelPerTripResult">
+                    0 L
+                </strong>
+
+            </div>
+
+
+            <div class="result-box">
+
+                <span>Cost Per Trip</span>
+
+                <strong id="costResult">
+                    ₦0
+                </strong>
+
+            </div>
+
+
+            <div class="result-box">
+
+                <span>Daily Cost</span>
+
+                <strong id="dailyResult">
+                    ₦0
+                </strong>
+
+            </div>
+
+
+            <div class="result-box">
+
+                <span>Weekly Cost</span>
+
+                <strong id="weeklyResult">
+                    ₦0
+                </strong>
+
+            </div>
+
+
+            <div class="result-box">
+
+                <span>Weekly Fuel</span>
+
+                <strong id="weeklyFuelResult">
+                    0 L
+                </strong>
+
+            </div>
+
+
+            <div class="result-box">
+
+                <span>Monthly Fuel</span>
+
+                <strong id="monthlyFuelResult">
+                    0 L
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <p class="notice">
+            Estimates depend on the fuel price, distance, consumption
+            and driving routine you provide. Actual fuel usage may vary.
+        </p>
+
+    </section>
+
+
+    <!-- CAR COMPARISON -->
+
+    <section class="card">
+
+        <h2 class="card-title">
+            Compare Two Cars
+        </h2>
+
+        <p class="card-description">
+            See how much each vehicle could cost you over a month.
+        </p>
+
+
+        <div class="comparison-grid">
+
+            <div class="car-panel">
+
+                <h3>Car A</h3>
+
+                <div class="input-group">
+
+                    <label for="compareCarA">
+                        Vehicle
+                    </label>
+
+                    <input
+                        type="text"
+                        id="compareCarA"
+                        placeholder="e.g. Camry">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="compareConsumptionA">
+                        Consumption
+                    </label>
+
+                    <input
+                        type="number"
+                        id="compareConsumptionA"
+                        placeholder="8"
+                        min="0.01"
+                        step="0.1">
+
+                </div>
+
+            </div>
+
+
+            <div class="car-panel">
+
+                <h3>Car B</h3>
+
+                <div class="input-group">
+
+                    <label for="compareCarB">
+                        Vehicle
+                    </label>
+
+                    <input
+                        type="text"
+                        id="compareCarB"
+                        placeholder="e.g. Corolla">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="compareConsumptionB">
+                        Consumption
+                    </label>
+
+                    <input
+                        type="number"
+                        id="compareConsumptionB"
+                        placeholder="6.5"
+                        min="0.01"
+                        step="0.1">
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="primary-button"
+            onclick="compareCars()"
+            type="button"
+            style="margin-top:18px;">
+            Compare Cars
+        </button>
+
+
+        <div
+            class="comparison-result"
+            id="comparisonResult"
+            style="display:none;">
+
+            <p id="comparisonNames">
+                Car A vs Car B
+            </p>
+
+            <strong id="comparisonDifference">
+                ₦0
+            </strong>
+
+            <p>
+                estimated monthly difference
+            </p>
+
+            <div
+                class="winner"
+                id="winnerText">
+            </div>
+
+        </div>
+
+
+        <div
+            class="comparison-error"
+            id="comparisonError">
+            Enter valid consumption values for both cars.
+        </div>
+
+    </section>
+
+
+    <footer>
+        Prime Fuel Calculator • Built with HTML, CSS & JavaScript
+    </footer>
+
+</main>
+
+
+<script>
+
+    /* ==========================
+       MAIN CALCULATOR
+    ========================== */
+
+    function calculateFuel() {
+
+        const carName =
+            document.getElementById("carName").value.trim();
+
+        const fuelPrice =
+            Number(document.getElementById("fuelPrice").value);
+
+        const distance =
+            Number(document.getElementById("distance").value);
+
+        const consumption =
+            Number(document.getElementById("consumption").value);
+
+        const tripType =
+            Number(document.getElementById("tripType").value);
+
+        const tripsPerDay =
+            Number(document.getElementById("tripsPerDay").value);
+
+        const daysPerWeek =
+            Number(document.getElementById("daysPerWeek").value);
+
+        const error =
+            document.getElementById("error");
+
+
+        if (
+            !Number.isFinite(fuelPrice) ||
+            !Number.isFinite(distance) ||
+            !Number.isFinite(consumption) ||
+            !Number.isFinite(tripsPerDay) ||
+            !Number.isFinite(daysPerWeek) ||
+            fuelPrice <= 0 ||
+            distance <= 0 ||
+            consumption <= 0 ||
+            tripsPerDay <= 0 ||
+            daysPerWeek < 1 ||
+            daysPerWeek > 7
+        ) {
+
+            error.style.display = "block";
+            return;
+        }
+
+
+        error.style.display = "none";
+
+
+        const actualDistance =
+            distance * tripType;
+
+        const fuelPerTrip =
+            (actualDistance / 100) * consumption;
+
+        const costPerTrip =
+            fuelPerTrip * fuelPrice;
+
+        const dailyFuel =
+            fuelPerTrip * tripsPerDay;
+
+        const dailyCost =
+            costPerTrip * tripsPerDay;
+
+        const weeklyFuel =
+            dailyFuel * daysPerWeek;
+
+        const weeklyCost =
+            dailyCost * daysPerWeek;
+
+        const monthlyFuel =
+            weeklyFuel * 4.33;
+
+        const monthlyCost =
+            weeklyCost * 4.33;
+
+
+        document.getElementById("carResult").textContent =
+            carName || "Your vehicle";
+
+        document.getElementById("monthlyResult").textContent =
+            formatMoney(monthlyCost);
+
+        document.getElementById("fuelPerTripResult").textContent =
+            formatLitres(fuelPerTrip);
+
+        document.getElementById("costResult").textContent =
+            formatMoney(costPerTrip);
+
+        document.getElementById("dailyResult").textContent =
+            formatMoney(dailyCost);
+
+        document.getElementById("weeklyResult").textContent =
+            formatMoney(weeklyCost);
+
+        document.getElementById("weeklyFuelResult").textContent =
+            formatLitres(weeklyFuel);
+
+        document.getElementById("monthlyFuelResult").textContent =
+            formatLitres(monthlyFuel);
+    }
+
+
+    /* ==========================
+       CAR COMPARISON
+    ========================== */
+
+    function compareCars() {
+
+        const carA =
+            document.getElementById("compareCarA").value.trim();
+
+        const carB =
+            document.getElementById("compareCarB").value.trim();
+
+        const consumptionA =
+            Number(
+                document.getElementById(
+                    "compareConsumptionA"
+                ).value
+            );
+
+        const consumptionB =
+            Number(
+                document.getElementById(
+                    "compareConsumptionB"
+                ).value
+            );
+
+        const fuelPrice =
+            Number(document.getElementById("fuelPrice").value);
+
+        const distance =
+            Number(document.getElementById("distance").value);
+
+        const tripType =
+            Number(document.getElementById("tripType").value);
+
+        const tripsPerDay =
+            Number(document.getElementById("tripsPerDay").value);
+
+        const daysPerWeek =
+            Number(document.getElementById("daysPerWeek").value);
+
+        const error =
+            document.getElementById("comparisonError");
+
+        const result =
+            document.getElementById("comparisonResult");
+
+
+        if (
+            !carA ||
+            !carB ||
+            consumptionA <= 0 ||
+            consumptionB <= 0 ||
+            fuelPrice <= 0 ||
+            distance <= 0 ||
+            tripsPerDay <= 0 ||
+            daysPerWeek < 1 ||
+            daysPerWeek > 7
+        ) {
+
+            error.style.display = "block";
+            result.style.display = "none";
+
+            return;
+        }
+
+
+        error.style.display = "none";
+
+
+        const actualDistance =
+            distance * tripType;
+
+        const monthlyDistance =
+            actualDistance *
+            tripsPerDay *
+            daysPerWeek *
+            4.33;
+
+
+        const monthlyCostA =
+            (monthlyDistance / 100) *
+            consumptionA *
+            fuelPrice;
+
+
+        const monthlyCostB =
+            (monthlyDistance / 100) *
+            consumptionB *
+            fuelPrice;
+
+
+        const difference =
+            Math.abs(monthlyCostA - monthlyCostB);
+
+
+        document.getElementById("comparisonNames").textContent =
+            carA + " vs " + carB;
+
+
+        document.getElementById("comparisonDifference").textContent =
+            formatMoney(difference);
+
+
+        let winnerText;
+
+
+        if (monthlyCostA < monthlyCostB) {
+
+            winnerText =
+                carA +
+                " is cheaper by about " +
+                formatMoney(difference) +
+                " per month.";
+
+        } else if (monthlyCostB < monthlyCostA) {
+
+            winnerText =
+                carB +
+                " is cheaper by about " +
+                formatMoney(difference) +
+                " per month.";
+
+        } else {
+
+            winnerText =
+                "Both vehicles have the same estimated fuel cost.";
+
+        }
+
+
+        document.getElementById("winnerText").textContent =
+            winnerText;
+
+
+        result.style.display = "block";
+    }
+
+
+    /* ==========================
+       FORMATTING
+    ========================== */
+
+    function formatMoney(amount) {
+
+        return "₦" + amount.toLocaleString("en-NG", {
+            maximumFractionDigits: 2
+        });
+
+    }
+
+
+    function formatLitres(amount) {
+
+        return amount.toLocaleString("en-NG", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }) + " L";
+
+    }
+
+
+    /* ==========================
+       RESET
+    ========================== */
+
+    function resetCalculator() {
+
+        document.getElementById("carName").value = "";
+        document.getElementById("fuelPrice").value = "";
+        document.getElementById("distance").value = "";
+        document.getElementById("consumption").value = "";
+
+        document.getElementById("tripType").value = "1";
+
+        document.getElementById("tripsPerDay").value = "1";
+
+        document.getElementById("daysPerWeek").value = "5";
+
+
+        document.getElementById("monthlyResult").textContent =
+            "₦0";
+
+        document.getElementById("carResult").textContent =
+            "Your vehicle";
+
+        document.getElementById("fuelPerTripResult").textContent =
+            "0 L";
+
+        document.getElementById("costResult").textContent =
+            "₦0";
+
+        document.getElementById("dailyResult").textContent =
+            "₦0";
+
+        document.getElementById("weeklyResult").textContent =
+            "₦0";
+
+        document.getElementById("weeklyFuelResult").textContent =
+            "0 L";
+
+        document.getElementById("monthlyFuelResult").textContent =
+            "0 L";
+
+        document.getElementById("error").style.display =
+            "none";
+
+        document.getElementById("comparisonResult").style.display =
+            "none";
+
+        document.getElementById("comparisonError").style.display =
+            "none";
+    }
+
+
+    /* ==========================
+       DARK MODE
+    ========================== */
+
+    function toggleTheme() {
+
+        document.body.classList.toggle("dark");
+
+        const isDark =
+            document.body.classList.contains("dark");
+
+        localStorage.setItem(
+            "primeTheme",
+            isDark ? "dark" : "light"
+        );
+
+        updateThemeButton();
+    }
+
+
+    function updateThemeButton() {
+
+        const button =
+            document.getElementById("themeButton");
+
+        const isDark =
+            document.body.classList.contains("dark");
+
+        button.textContent =
+            isDark
+                ? "☀️ Light Mode"
+                : "🌙 Dark Mode";
+    }
+
+
+    /* ==========================
+       LOAD THEME
+    ========================== */
+
+    const savedTheme =
+        localStorage.getItem("primeTheme");
+
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+    }
+
+    updateThemeButton();
+
+</script>
+
+</body>
+</html>
